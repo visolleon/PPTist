@@ -10,19 +10,25 @@
                     }">
                         <PopoverMenuItem>导入 pptist 文件</PopoverMenuItem>
                     </FileInput> -->
+                    <FileInput accept=".json" @change="files => {
+                      importJSONFile(files, true)
+                      mainMenuVisible = false
+                    }">
+                        <PopoverMenuItem>打开 JSON 文件</PopoverMenuItem>
+                    </FileInput>
+
+                    <FileInput accept="application/vnd.openxmlformats-officedocument.presentationml.presentation" @change="files => {
+                      importPPTXFile(files, true)
+                      mainMenuVisible = false
+                    }">
+                        <PopoverMenuItem>打开 pptx 文件</PopoverMenuItem>
+                    </FileInput>
 
                     <FileInput accept=".json" @change="files => {
                       importJSONFile(files, false)
                       mainMenuVisible = false
                     }">
                         <PopoverMenuItem>导入 JSON 文件</PopoverMenuItem>
-                    </FileInput>
-
-                    <FileInput accept="application/vnd.openxmlformats-officedocument.presentationml.presentation" @change="files => {
-                      importPPTXFile(files, false)
-                      mainMenuVisible = false
-                    }">
-                        <PopoverMenuItem>导入 pptx 文件（测试版）</PopoverMenuItem>
                     </FileInput>
                     <PopoverMenuItem @click="setDialogForExport('pptx')">导出文件</PopoverMenuItem>
                     <PopoverMenuItem @click="resetSlides(); mainMenuVisible = false">重置幻灯片</PopoverMenuItem>
@@ -59,11 +65,11 @@
             <div class="menu-item" v-tooltip="'导出'" @click="setDialogForExport('pptx')">
                 <IconDownload class="icon" />
             </div>
-            <a class="github-link" v-tooltip="'Copyright © 2020-PRESENT pipipi-pikachu'" href="https://github.com/pipipi-pikachu/PPTist" target="_blank">
+            <!-- <a class="github-link" v-tooltip="'Copyright © 2020-PRESENT pipipi-pikachu'" href="https://github.com/pipipi-pikachu/PPTist" target="_blank">
                 <div class="menu-item">
                     <IconGithub class="icon" />
                 </div>
-            </a>
+            </a> -->
         </div>
 
         <Drawer :width="320" v-model:visible="hotkeyDrawerVisible" placement="right">
@@ -96,8 +102,13 @@ const mainStore = useMainStore()
 const slidesStore = useSlidesStore()
 const { title } = storeToRefs(slidesStore)
 const { enterScreening, enterScreeningFromStart } = useScreening()
-const { importSpecificFile, importJSONFile, importRemoteJSONFile, importPPTXFile, exporting } =
-    useImport()
+const {
+  importSpecificFile,
+  importJSONFile,
+  importRemoteJSONFile,
+  importPPTXFile,
+  exporting,
+} = useImport()
 const { resetSlides } = useSlideHandler()
 
 const mainMenuVisible = ref(false)
@@ -131,7 +142,6 @@ const setDialogForImportURL = (type: DialogForExportTypes) => {
   mainStore.setDialogForImport(true)
   mainMenuVisible.value = false
 }
-
 </script>
 
 <style lang="scss" scoped>

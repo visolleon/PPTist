@@ -19,7 +19,7 @@ interface PasteTextClipboardDataOptions {
  * ！！！必须确保图片来源都是合法、可靠、可控、无访问限制的
  */
 const isValidImgURL = (url: string) => {
-  return /^https:\/\/pptist.cn(\/[\w-./?%&=]*)?\.(jpg|jpeg|png|svg|webp)(\?.*)?$/i.test(url)
+  return /^https:\/\/(.+)\.starngage.com(\/[\w-./?%&=]*)?\.(jpg|jpeg|png|svg|webp)(\?.*)?$/i.test(url)
 }
 
 export default () => {
