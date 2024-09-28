@@ -59,6 +59,55 @@ export default () => {
     reader.readAsText(file)
   }
 
+
+  // 导入JSON文件
+  const importJSONFile = (files: FileList, cover = false) => {
+    const file = files[0]
+
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      try {
+        const slides = JSON.parse(reader.result as string)
+        if (cover) {
+          slidesStore.updateSlideIndex(0)
+          slidesStore.setSlides(slides)
+        }
+        else if (isEmptySlide.value) slidesStore.setSlides(slides)
+        else addSlidesFromData(slides)
+      }
+      catch {
+        message.error('无法正确读取 / 解析该文件')
+      }
+    })
+    reader.readAsText(file)
+  }
+
+  // 导入远程JSON文件
+  const importRemoteJSONFile = async (url: string, cover = false) => {
+    if (!url) {
+      return
+    }
+    const res = await fetch(url)
+    if (res.status === 200) {
+      try {
+        const title = decodeURIComponent(url)
+        slidesStore.setTitle(title)
+        const slides = await res.json()
+        if (cover) {
+          slidesStore.updateSlideIndex(0)
+          slidesStore.setSlides(slides)
+        }
+        else if (isEmptySlide.value) slidesStore.setSlides(slides)
+        else addSlidesFromData(slides)
+        return true
+      }
+      catch {
+        message.error('无法正确读取 / 解析该文件')
+      }
+    }
+    return false
+  }
+
   const parseLineElement = (el: Shape) => {
     let start: [number, number] = [0, 0]
     let end: [number, number] = [0, 0]
@@ -113,7 +162,7 @@ export default () => {
     for (const item of SHAPE_LIST) {
       shapeList.push(...item.children)
     }
-    
+
     const reader = new FileReader()
     reader.onload = async e => {
       const json = await parse(e.target!.result as ArrayBuffer)
@@ -173,7 +222,7 @@ export default () => {
             el.height = el.height * ratio
             el.left = el.left * ratio
             el.top = el.top * ratio
-  
+
             if (el.type === 'text') {
               const textEl: PPTTextElement = {
                 type: 'text',
@@ -262,7 +311,7 @@ export default () => {
                   'down': 'bottom',
                   'up': 'top',
                 }
-                
+
                 const element: PPTShapeElement = {
                   type: 'shape',
                   id: nanoid(10),
@@ -297,15 +346,15 @@ export default () => {
                     color: el.shadow.color,
                   }
                 }
-    
+
                 if (shape) {
                   element.path = shape.path
                   element.viewBox = shape.viewBox
-    
+
                   if (shape.pathFormula) {
                     element.pathFormula = shape.pathFormula
                     element.viewBox = [el.width, el.height]
-    
+
                     const pathFormula = SHAPE_PATH_FORMULAS[shape.pathFormula]
                     if ('editable' in pathFormula && pathFormula.editable) {
                       element.path = pathFormula.formula(el.width, el.height, pathFormula.defaultValue)
@@ -319,19 +368,19 @@ export default () => {
                   else {
                     element.special = true
                     element.path = el.path!
-  
+
                     const { maxX, maxY } = getSvgPathRange(element.path)
                     element.viewBox = [maxX || originWidth, maxY || originHeight]
                   }
                 }
-    
+
                 if (element.path) slide.elements.push(element)
               }
             }
             else if (el.type === 'table') {
               const row = el.data.length
               const col = el.data[0].length
-  
+
               const style: TableCellStyle = {
                 fontname: theme.value.fontName,
                 color: theme.value.fontColor,
@@ -371,9 +420,9 @@ export default () => {
                 }
                 data.push(rowCells)
               }
-  
+
               const colWidths: number[] = new Array(col).fill(1 / col)
-  
+
               slide.elements.push({
                 type: 'table',
                 id: nanoid(10),
@@ -396,7 +445,7 @@ export default () => {
               let labels: string[]
               let legends: string[]
               let series: number[][]
-  
+
               if (el.chartType === 'scatterChart' || el.chartType === 'bubbleChart') {
                 labels = el.data[0].map((item, index) => `坐标${index + 1}`)
                 legends = ['X', 'Y']
@@ -410,7 +459,7 @@ export default () => {
               }
 
               const options: ChartOptions = {}
-  
+
               let chartType: ChartType = 'bar'
 
               switch (el.chartType) {
@@ -446,7 +495,7 @@ export default () => {
                   break
                 default:
               }
-  
+
               slide.elements.push({
                 type: 'chart',
                 id: nanoid(10),
@@ -488,6 +537,8 @@ export default () => {
 
   return {
     importSpecificFile,
+    importRemoteJSONFile,
+    importJSONFile,
     importPPTXFile,
     exporting,
   }

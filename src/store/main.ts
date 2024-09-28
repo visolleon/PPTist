@@ -32,6 +32,7 @@ export interface MainState {
   selectedTableCells: string[]
   selectedSlidesIndex: number[]
   dialogForExport: DialogForExportTypes
+  dialogForImport: boolean
   databaseId: string
   textFormatPainter: TextFormatPainter | null
   shapeFormatPainter: ShapeFormatPainter | null
@@ -67,6 +68,7 @@ export const useMainStore = defineStore('main', {
     isScaling: false, // 正在进行元素缩放
     selectedSlidesIndex: [], // 当前被选中的页面索引集合
     dialogForExport: '', // 导出面板
+    dialogForImport: false, // 导入面板
     databaseId, // 标识当前应用的indexedDB数据库ID
     textFormatPainter: null, // 文字格式刷
     shapeFormatPainter: null, // 形状格式刷
@@ -181,6 +183,10 @@ export const useMainStore = defineStore('main', {
 
     setDialogForExport(type: DialogForExportTypes) {
       this.dialogForExport = type
+    },
+
+    setDialogForImport(type: boolean) {
+      this.dialogForImport = type
     },
 
     setTextFormatPainter(textFormatPainter: TextFormatPainter | null) {
