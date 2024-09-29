@@ -87,6 +87,7 @@ export default () => {
   // 将HTML字符串格式化为pptxgenjs所需的格式
   // 核心思路：将HTML字符串按样式分片平铺，每个片段需要继承祖先元素的样式信息，遇到块级元素需要换行
   const formatHTML = (html: string) => {
+    html = html || ''
     const ast = toAST(html)
     let bulletFlag = false
     let indent = 0

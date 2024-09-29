@@ -87,19 +87,23 @@ export default () => {
     if (!url) {
       return
     }
-    const res = await fetch(url)
+    const res = await fetch(url, { mode: 'cors', credentials: 'include' })
     if (res.status === 200) {
       try {
         const title = decodeURIComponent(url)
         slidesStore.setTitle(title)
         const slides = await res.json()
-        if (cover) {
-          slidesStore.updateSlideIndex(0)
-          slidesStore.setSlides(slides)
-        }
-        else if (isEmptySlide.value) slidesStore.setSlides(slides)
-        else addSlidesFromData(slides)
-        return true
+        if (slides instanceof Array) {
+          if (cover) {
+            slidesStore.updateSlideIndex(0)
+            slidesStore.setSlides(slides)
+          }
+          else if (isEmptySlide.value) slidesStore.setSlides(slides)
+          else addSlidesFromData(slides)
+          return true
+        } 
+        message.error('无法正确读取 / 解析该文件')
+        return false
       }
       catch {
         message.error('无法正确读取 / 解析该文件')
