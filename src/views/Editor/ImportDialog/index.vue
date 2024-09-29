@@ -17,7 +17,6 @@ import { storeToRefs } from 'pinia'
 import Input from '@/components/Input.vue'
 import Button from '@/components/Button.vue'
 import useImport from '@/hooks/useImport'
-import func from '../../../../vue-temp/vue-editor-bridge'
 
 const emit = defineEmits<{
     (event: 'close'): void

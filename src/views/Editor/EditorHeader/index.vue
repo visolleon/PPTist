@@ -18,10 +18,10 @@
                     </FileInput>
 
                     <FileInput accept="application/vnd.openxmlformats-officedocument.presentationml.presentation" @change="files => {
-                      importPPTXFile(files, true)
+                      importPPTXFile(files)
                       mainMenuVisible = false
                     }">
-                        <PopoverMenuItem>打开 pptx 文件</PopoverMenuItem>
+                        <PopoverMenuItem>导入 pptx 文件</PopoverMenuItem>
                     </FileInput>
 
                     <FileInput accept=".json" @change="files => {
@@ -138,7 +138,7 @@ const setDialogForExport = (type: DialogForExportTypes) => {
   mainMenuVisible.value = false
 }
 
-const setDialogForImportURL = (type: DialogForExportTypes) => {
+const setDialogForImportURL = () => {
   mainStore.setDialogForImport(true)
   mainMenuVisible.value = false
 }
